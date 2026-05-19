@@ -39,7 +39,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public Page<Goods> search(int page, Integer categoryId, String keyword) {
-        Page<Goods> p = new Page<>(page, 12);
+        Page<Goods> p = new Page<>(page, 3);
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
         wrapper.eq("status", "在售");
         if (categoryId != null) {

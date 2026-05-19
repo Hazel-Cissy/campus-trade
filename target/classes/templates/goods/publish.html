@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布商品 - 校园二手交易</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/goods/list}">校园二手交易</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/goods/list}">商品列表</a>
+            <a class="nav-link" th:href="@{/goods/my}">我的发布</a>
+            <a class="nav-link" th:href="@{/order/my}">我的订单</a>
+            <a class="nav-link" th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h3>发布商品</h3>
+            <form id="publishForm">
+                <div class="mb-3">
+                    <label class="form-label">商品标题</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">价格</label>
+                    <input type="number" name="price" class="form-control" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">分类</label>
+                    <select name="categoryId" class="form-select" required>
+                        <option value="">请选择</option>
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">描述</label>
+                    <textarea name="description" class="form-control" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">发布</button>
+            </form>
+            <div id="msg" class="text-center mt-2"></div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+$('#publishForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: '/campus/goods/publish',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            title: $('[name=title]').val(),
+            price: $('[name=price]').val(),
+            categoryId: $('[name=categoryId]').val(),
+            description: $('[name=description]').val()
+        }),
+        success: function(res) {
+            if (res.code === 200) {
+                location.href = '/campus/goods/list';
+            } else {
+                $('#msg').text(res.msg).addClass('text-danger');
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
