@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 校园二手交易</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/goods/list}">校园二手交易</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/goods/list}">商品列表</a>
+            <a class="nav-link" th:href="@{/goods/publish}">发布商品</a>
+            <a class="nav-link" th:href="@{/goods/my}">我的发布</a>
+            <a class="nav-link" th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h4>我买到的</h4>
+    <table class="table mb-5" th:if="${buyOrders != null && !buyOrders.isEmpty()}">
+        <thead><tr><th>商品ID</th><th>卖家ID</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+        <tbody>
+            <tr th:each="order : ${buyOrders}">
+                <td th:text="${order.goodsId}"></td>
+                <td th:text="${order.sellerId}"></td>
+                <td th:text="${order.status}"></td>
+                <td th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <button th:if="${order.status == '待确认'}"
+                            class="btn btn-sm btn-outline-secondary"
+                            th:attr="onclick='|cancel(' + ${order.id} + ')|'">
+                        取消
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:unless="${buyOrders != null && !buyOrders.isEmpty()}" class="text-muted mb-4">暂无购买订单</div>
+
+    <h4>我卖出的</h4>
+    <table class="table" th:if="${sellOrders != null && !sellOrders.isEmpty()}">
+        <thead><tr><th>商品ID</th><th>买家ID</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+        <tbody>
+            <tr th:each="order : ${sellOrders}">
+                <td th:text="${order.goodsId}"></td>
+                <td th:text="${order.buyerId}"></td>
+                <td th:text="${order.status}"></td>
+                <td th:text="${#temporals.format(order.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <button th:if="${order.status == '待确认'}"
+                            class="btn btn-sm btn-outline-success"
+                            th:attr="onclick='|confirm(' + ${order.id} + ')|'">
+                        确认成交
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:unless="${sellOrders != null && !sellOrders.isEmpty()}" class="text-muted">暂无卖出订单</div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+function confirm(orderId) {
+    if (!confirm('确认成交？')) return;
+    $.ajax({
+        url: '/campus/order/confirm',
+        type: 'POST',
+        data: { orderId: orderId },
+        success: function(res) {
+            if (res.code === 200) location.reload();
+            else alert(res.msg);
+        }
+    });
+}
+function cancel(orderId) {
+    if (!confirm('确认取消？')) return;
+    $.ajax({
+        url: '/campus/order/cancel',
+        type: 'POST',
+        data: { orderId: orderId },
+        success: function(res) {
+            if (res.code === 200) location.reload();
+            else alert(res.msg);
+        }
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 校园二手交易</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="text-center mb-4">校园二手交易</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">登录</h5>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">登录</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a th:href="@{/register}">没有账号？去注册</a>
+                    </div>
+                    <div id="msg" class="text-danger text-center mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+$('#loginForm').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: '/campus/user/login',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            username: $('[name=username]').val(),
+            password: $('[name=password]').val()
+        }),
+        success: function(res) {
+            if (res.code === 200) {
+                location.href = '/campus/goods/list';
+            } else {
+                $('#msg').text(res.msg);
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

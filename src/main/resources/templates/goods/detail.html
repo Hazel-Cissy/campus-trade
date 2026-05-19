@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${goods.title}">商品详情</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/goods/list}">校园二手交易</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/goods/publish}">发布商品</a>
+            <a class="nav-link" th:href="@{/goods/my}">我的发布</a>
+            <a class="nav-link" th:href="@{/order/my}">我的订单</a>
+            <a class="nav-link" th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 th:text="${goods.title}">商品名</h4>
+                    <hr>
+                    <h3 class="text-danger">¥<span th:text="${goods.price}">0</span></h3>
+                    <p><strong>描述：</strong><span th:text="${goods.description} ?: '暂无描述'"></span></p>
+                    <p><strong>发布时间：</strong><span th:text="${#temporals.format(goods.createTime, 'yyyy-MM-dd HH:mm')}"></span></p>
+                    <p><strong>状态：</strong><span class="badge bg-success" th:text="${goods.status}"></span></p>
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-danger btn-lg" id="buyBtn"
+                                th:if="${goods.status == '在售'}"
+                                th:onclick="'buy(' + ${goods.id} + ')'">
+                            立即购买
+                        </button>
+                        <div id="msg" class="text-center mt-2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a th:href="@{/goods/list}" class="btn btn-outline-secondary">返回列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+function buy(goodsId) {
+    if (!confirm('确认购买？')) return;
+    $.ajax({
+        url: '/campus/order/create',
+        type: 'POST',
+        data: { goodsId: goodsId },
+        success: function(res) {
+            if (res.code === 200) {
+                alert('下单成功！');
+                location.reload();
+            } else {
+                alert(res.msg);
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>
